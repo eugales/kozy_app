@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
+import 'package:kozy_app/repository/models/auth/auth_req_params.dart';
+import 'package:kozy_app/repository/models/auth/auth_res_result.dart';
 import 'package:kozy_app/repository/models/errors/auth_error.dart';
 import 'package:kozy_app/repository/models/errors/common.dart';
 import 'package:kozy_app/repository/models/user.dart';
@@ -19,31 +21,31 @@ class AuthService {
     return Uri.parse('$baseUrl/$url');
   }
 
-  Future<User> signUp(User user, String password) async {
+  Future<AuthResResult> signUp(AuthReqParams reqParams) async {
     final response = await _httpClient.post(getUrl(url: 'auth/sign_up'),
-        body: jsonEncode(user.toMapForAuth(password)),
+        body: jsonEncode(reqParams.user.toMapForAuth(reqParams.password)),
         headers: {'content-type': 'application/json'});
     if (response.statusCode == 200) {
-      if (response.body.isNotEmpty) {
-        return User.fromString(response.body);
-      } else {
-        throw ErrorEmptyResponse();
-      }
+      final token = response.headers['authorization'];
+      if(token == null || token.isEmpty) throw ErrorEmptyAuthorization();
+      if(response.body.isNotEmpty) throw ErrorEmptyResponse();
+
+      return AuthResResult(user: User.fromString(response.body), token: token);
     } else {
       throw ErrorGettingUser('Error getting signed up');
     }
   }
 
-  Future<User> signIn(User user, String password) async {
+  Future<AuthResResult> signIn(AuthReqParams reqParams) async {
     final response = await _httpClient.post(getUrl(url: 'auth/sign_in'),
-        body: jsonEncode(user.toMapForAuth(password)),
+        body: jsonEncode(reqParams.user.toMapForAuth(reqParams.password)),
         headers: {'content-type': 'application/json'});
     if (response.statusCode == 200) {
-      if (response.body.isNotEmpty) {
-        return User.fromString(response.body);
-      } else {
-        throw ErrorEmptyResponse();
-      }
+            final token = response.headers['authorization'];
+      if (token == null || token.isEmpty) throw ErrorEmptyAuthorization();
+      if (response.body.isNotEmpty) throw ErrorEmptyResponse();
+
+      return AuthResResult(user: User.fromString(response.body), token: token);
     } else {
       throw ErrorGettingUser('Error getting signed in');
     }
