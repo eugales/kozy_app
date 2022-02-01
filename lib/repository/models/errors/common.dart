@@ -1,0 +1,1 @@
+class ErrorEmptyResponse implements Exception {}
