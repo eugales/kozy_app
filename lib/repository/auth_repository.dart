@@ -2,6 +2,7 @@ import 'package:kozy_app/repository/models/auth/auth_req_params.dart';
 import 'package:kozy_app/repository/models/auth/auth_res_result.dart';
 import 'package:kozy_app/repository/models/user.dart';
 import 'package:kozy_app/repository/services/auth_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthRepository {
   const AuthRepository({
@@ -12,17 +13,17 @@ class AuthRepository {
   Future<User> signUp(AuthReqParams reqParams) async {
     AuthResResult result = await service.signUp(reqParams);
 
-    //sharedPreferences set
-    result.token;
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('authorization', result.token);
 
     return Future<User>.value(result.user);
   }
 
-  Future<User> signIn(AuthReqParams reqParams) async {
-    AuthResResult result = await service.signIn(reqParams);
+  Future<User> signIn(String email, String password) async {
+    AuthResResult result = await service.signIn(email, password);
 
-    //sharedPreferences set
-    result.token;
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('authorization', result.token);
 
     return Future<User>.value(result.user);
   }
@@ -31,7 +32,8 @@ class AuthRepository {
     bool result = await service.signOut(token);
 
     if(result) {
-      //sharedPreferences remove
+      final prefs = await SharedPreferences.getInstance();
+      prefs.remove('authorization');
     }
 
     return false;

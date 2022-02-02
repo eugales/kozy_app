@@ -19,9 +19,10 @@ class ProductService {
     return Uri.parse('$baseUrl/$url');
   }
 
-  Future<List<Product>> getAllProducts() async {
+  Future<List<Product>> getAllProducts(String token) async {
     final response = await _httpClient.get(
       getUrl(url: 'products'),
+      headers: {'content-type': 'application/json', 'authorization': token}
     );
     if (response.statusCode == 200) {
       if (response.body.isNotEmpty) {
@@ -39,9 +40,10 @@ class ProductService {
   }
 
 
-  Future<List<Product>> getMyProducts() async {
+  Future<List<Product>> getMyProducts(String token) async {
     final response = await _httpClient.get(
       getUrl(url: 'products/my'),
+      headers: {'content-type': 'application/json', 'authorization': token}
     );
     if (response.statusCode == 200) {
       if (response.body.isNotEmpty) {
