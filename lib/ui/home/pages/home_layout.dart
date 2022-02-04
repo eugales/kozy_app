@@ -8,13 +8,12 @@ class HomeLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return Padding(
-      padding: const EdgeInsets.only(top: 40.0),
+      padding: const EdgeInsets.symmetric(horizontal: 12.0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-              AuthPage()
-        ],
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: const [AuthPage()],
       ),
     );
   }

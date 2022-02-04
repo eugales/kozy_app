@@ -1,24 +1,21 @@
 import 'package:kozy_app/repository/models/product.dart';
 import 'package:kozy_app/repository/services/product_service.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:kozy_app/utils/session_manager.dart';
 
 class ProductRepository {
+  final ProductService _service;
+
   const ProductRepository({
-    required this.service,
-  });
-  final ProductService service;
+    required ProductService service,
+  }) : _service = service;
 
   Future<List<Product>> getAllProducts() async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('authorization');
-    if (token == null) throw Exception('No authorization key in prefs');
-    return service.getAllProducts(token);
+    String token = await SessionManager().getAuthToken();
+    return _service.getAllProducts(token);
   }
 
   Future<List<Product>> getMyProducts() async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('authorization');
-    if (token == null) throw Exception('No authorization key in prefs');
-    return service.getMyProducts(token);
+    String token = await SessionManager().getAuthToken();
+    return _service.getMyProducts(token);
   }
 }
