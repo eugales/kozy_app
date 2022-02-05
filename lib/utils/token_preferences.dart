@@ -1,6 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-class SessionManager {
+class TokenPreferences {
   final String _authTokenKey = "auth_token";
 
   Future<bool> haveAuthToken() async {

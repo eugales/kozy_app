@@ -1,6 +1,7 @@
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:kozy_app/repository/auth_repository.dart';
+import 'package:kozy_app/bloc/session/session_bloc.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({Key? key}) : super(key: key);
@@ -15,22 +16,17 @@ class _SignInPageState extends State<SignInPage> {
 
   @override
   void dispose() {
-    // Clean up the controller when the widget is disposed.
     emailController.dispose();
     passwordController.dispose();
     super.dispose();
   }
 
-  void onSignInPressed(AuthRepository authRepository) {
+  void onSignInPressed() {
     if (_formKey.currentState!.validate()) {
       String email = emailController.value.text;
       String password = passwordController.value.text;
-      final future = authRepository.signIn(email, password);
-      future.whenComplete(() {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Signed.')),
-        );
-      });
+      final provider = BlocProvider.of<SessionBloc>(context);
+      provider.add(SessionSignIn(email: email, password: password));
     }
   }
 
@@ -38,8 +34,6 @@ class _SignInPageState extends State<SignInPage> {
 
   @override
   Widget build(BuildContext context) {
-    final authRepository = RepositoryProvider.of<AuthRepository>(context);
-
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Form(
@@ -50,18 +44,27 @@ class _SignInPageState extends State<SignInPage> {
               const Text('Email'),
               TextFormField(
                 controller: emailController,
+                validator: (v) {
+                  if (v == null || v.isEmpty) return 'Please enter email';
+                  if (!EmailValidator.validate(v)) return 'Please enter valid email';
+
+                  return null;
+                },
               ),
               const SizedBox(height: 20),
               const Text('Password'),
               TextFormField(
                 controller: passwordController,
+                validator: (v) =>
+                    (v == null || v.isEmpty) ? 'Please enter password' : null,
+                obscureText: true,
               ),
               Center(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   child: ElevatedButton(
                     child: const Text('Sign In'),
-                    onPressed: () => onSignInPressed(authRepository),
+                    onPressed: () => onSignInPressed(),
                   ),
                 ),
               )

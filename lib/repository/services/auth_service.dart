@@ -32,7 +32,7 @@ class AuthService {
 
       return AuthResResult(user: User.fromString(response.body), token: token);
     } else {
-      throw ErrorGettingUser('Error getting signed up');
+      throw ErrorAuthorization('Error getting signed up');
     }
   }
 
@@ -41,9 +41,7 @@ class AuthService {
     final data = jsonEncode({"email": email, "password": password});
     final response = await _httpClient.post(url,
         body: data,
-        headers: {
-          'content-type': 'application/json; charset=utf-8'
-          });
+        headers: {'content-type': 'application/json; charset=utf-8'});
     if (response.statusCode == 201) {
       final token = response.headers['authorization'];
       if (token == null || token.isEmpty) throw ErrorEmptyAuthorization();
@@ -51,7 +49,7 @@ class AuthService {
 
       return AuthResResult(user: User.fromString(response.body), token: token);
     } else {
-      throw ErrorGettingUser('Error getting signed in');
+      throw ErrorAuthorization('Error getting signed in');
     }
   }
 
@@ -61,7 +59,20 @@ class AuthService {
     if (response.statusCode == 204) {
       return true;
     } else {
-      throw ErrorGettingUser('Error getting signed out');
+      throw ErrorAuthorization('Error getting signed out');
+    }
+  }
+
+  Future<bool> validateAuthToken(String token) async {
+    final response = await _httpClient.get(getUrl(url: 'auth/validate_token'),
+        headers: {'content-type': 'application/json', 'authorization': token});
+    if (response.statusCode == 200) {
+      return true;
+    }
+    if (response.statusCode == 401) {
+      return false;
+    } else {
+      throw ErrorAuthorization('Something went wrong ${response.statusCode}');
     }
   }
 }
