@@ -31,7 +31,9 @@ class User {
 
   factory User.fromString(String data) => User.fromJson(json.decode(data));
 
-  Map<String, dynamic> toMapForAuth(String password) => <String, dynamic>{
+  static Map<String, String> mapForAuth(String email, String password,
+          String first_name, String last_name, String role) =>
+      <String, String>{
         'email': email,
         'password': password,
         'first_name': first_name,

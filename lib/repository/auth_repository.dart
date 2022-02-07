@@ -1,5 +1,6 @@
-import 'package:kozy_app/repository/models/auth/auth_req_params.dart';
+import 'package:flutter/foundation.dart';
 import 'package:kozy_app/repository/models/auth/auth_res_result.dart';
+import 'package:kozy_app/repository/models/errors/auth_error.dart';
 import 'package:kozy_app/repository/models/user.dart';
 import 'package:kozy_app/repository/services/auth_service.dart';
 import 'package:kozy_app/utils/token_preferences.dart';
@@ -12,10 +13,14 @@ class AuthRepository {
     required AuthService service,
   }) : _service = service;
 
-  Future<User> signUp(AuthReqParams reqParams) async {
-    AuthResResult result = await _service.signUp(reqParams);
-    _tokenPreferences.setAuthToken(result.token);
-    return Future<User>.value(result.user);
+  Future<User> signUp(Map<String, String> userMap) async {
+    try {
+      AuthResResult result = await _service.signUp(userMap);
+      await _tokenPreferences.setAuthToken(result.token);
+      return Future<User>.value(result.user);
+    } on ErrorRegistration catch (_) {
+      rethrow;
+    }
   }
 
   Future<User> signIn(String email, String password) async {
@@ -26,10 +31,7 @@ class AuthRepository {
 
   Future<bool> signOut(String token) async {
     final result = await _service.signOut(token);
-    if (result) {
-      return _tokenPreferences.clearAuthToken();
-    }
-    return false;
+    return _tokenPreferences.clearAuthToken();
   }
 
   Future<bool> validateAuthToken() async {

@@ -14,4 +14,18 @@ class SessionSignIn extends SessionEvent {
 
   const SessionSignIn({required this.email, required this.password});
 }
+class SessionSignUp extends SessionEvent {
+  final String email;
+  final String password;
+  final String firstName;
+  final String lastName;
+  final String roleName;
+
+  const SessionSignUp(
+      {required this.email,
+      required this.password,
+      required this.firstName,
+      required this.lastName,
+      required this.roleName});
+}
 class SessionSignOut extends SessionEvent {}

@@ -8,12 +8,17 @@ abstract class SessionState extends Equatable {
 }
 
 class SessionInitial extends SessionState {}
-
+class SessionInprogress extends SessionState {}
+class SessionRegistered extends SessionState {}
 class SessionAuthorized extends SessionState {}
-
 class SessionUnauthorized extends SessionState {}
-
 class SessionFailure extends SessionState {
   final message;
-  const SessionFailure({this.message});
+  SessionFailure({this.message}) {
+    if (kDebugMode) {
+      print(message.toString());
+    }
+  }
 }
+
+

@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
-import 'package:kozy_app/repository/models/auth/auth_req_params.dart';
 import 'package:kozy_app/repository/models/auth/auth_res_result.dart';
 import 'package:kozy_app/repository/models/errors/auth_error.dart';
 import 'package:kozy_app/repository/models/errors/common.dart';
@@ -21,18 +20,21 @@ class AuthService {
     return Uri.parse('$baseUrl/$url');
   }
 
-  Future<AuthResResult> signUp(AuthReqParams reqParams) async {
+  Future<AuthResResult> signUp(Map<String, String> userMap) async {
     final response = await _httpClient.post(getUrl(url: 'auth/sign_up'),
-        body: jsonEncode(reqParams.user.toMapForAuth(reqParams.password)),
+        body: jsonEncode(userMap),
         headers: {'content-type': 'application/json'});
-    if (response.statusCode == 200) {
+    if (response.statusCode == 201) {
       final token = response.headers['authorization'];
       if (token == null || token.isEmpty) throw ErrorEmptyAuthorization();
       if (response.body.isEmpty) throw ErrorEmptyResponse();
 
       return AuthResResult(user: User.fromString(response.body), token: token);
+    } else if (response.statusCode == 422) {
+      throw ErrorRegistration(
+          message: 'Error getting signed up: unprocessable entity');
     } else {
-      throw ErrorAuthorization('Error getting signed up');
+      throw ErrorRegistration(message: 'Error getting signed up');
     }
   }
 
@@ -58,6 +60,8 @@ class AuthService {
         headers: {'content-type': 'application/json', 'authorization': token});
     if (response.statusCode == 204) {
       return true;
+    } else if (response.statusCode == 401) {
+      return false;
     } else {
       throw ErrorAuthorization('Error getting signed out');
     }

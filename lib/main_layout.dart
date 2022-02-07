@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kozy_app/bloc/session/session_bloc.dart';
+import 'package:kozy_app/ui/auth/pages/sign_in_page.dart';
 import 'package:kozy_app/ui/home/layouts/home_layout.dart';
-import 'package:kozy_app/ui/auth/layouts/auth_layout.dart';
 
 class MainLayout extends StatelessWidget {
   const MainLayout({Key? key}) : super(key: key);
@@ -10,16 +10,21 @@ class MainLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = BlocProvider.of<SessionBloc>(context);
-    provider.add(SessionValidate());
 
-    return BlocConsumer(
-      bloc: provider,
+    return BlocConsumer<SessionBloc, SessionState>(
       builder: (context, state) {
-        if (state is SessionAuthorized) {
+        if (state is SessionInitial) {
+          provider.add(SessionValidate());
+        } else if (state is SessionInprogress) {
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        } else if (state is SessionAuthorized || state is SessionRegistered) {
           return const HomeLayout();
-        }
-        if (state is SessionUnauthorized || state is SessionFailure) {
-          return const AuthLayout();
+        } else if (state is SessionUnauthorized || state is SessionFailure) {
+          return const SignInPage();
         }
         return Scaffold(
           body: Padding(
