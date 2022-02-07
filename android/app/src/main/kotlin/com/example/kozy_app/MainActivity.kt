@@ -1,4 +1,4 @@
-package com.example.kozy_app
+package com.eugales.kozy_app
 
 import io.flutter.embedding.android.FlutterActivity
 

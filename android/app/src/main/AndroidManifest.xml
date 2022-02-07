@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.kozy_app">
+    package="com.eugales.kozy_app">
    <application
         android:label="kozy_app"
         android:name="${applicationName}"
