@@ -12,14 +12,14 @@ abstract class AuthenticationService {
 }
 
 class MainAuthenticationService extends AuthenticationService {
-  final String _host = 'http://localhost';
-  final int _port = 3000;
+  final String authority = 'localhost:3000';
   final Map<String, String> _headers = {
     'content-type': 'application/json',
   };
 
   Uri _getUri(String path) {
-    return Uri(host: _host, port: _port, path: path);
+    Uri uri = Uri.http(authority, path);
+    return uri;
   }
 
   @override
@@ -35,8 +35,9 @@ class MainAuthenticationService extends AuthenticationService {
 
   @override
   Future<AuthResponse> signInWithUsernameAndPassword(String username, String password) async {
-    final response = await http.get(_getUri('/auth/sign_in'), headers: _headers);
-    if (response.statusCode == 200) {
+    final body = jsonEncode({'email': username, 'password': password});
+    final response = await http.post(_getUri('/auth/sign_in'), headers: _headers, body: body);
+    if (response.statusCode == 201) {
       final json = jsonDecode(response.body);
       return AuthResponse.fromJson(json);
     }
@@ -45,7 +46,7 @@ class MainAuthenticationService extends AuthenticationService {
 
   @override
   Future<AuthResponse> signUpWithUsernameAndPassword(String username, String password) async {
-    final body = jsonEncode({username: username, password: password});
+    final body = jsonEncode({'username': username, 'password': password});
     final response = await http.post(_getUri('/auth/sign_up'), headers: _headers, body: body);
     if (response.statusCode == 201) {
       final json = jsonDecode(response.body);
