@@ -29,7 +29,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  json_serializable:
+  equatable:
+  json_annotation:
+  http:
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -39,6 +41,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  json_serializable:
   build_runner:
 
   # The "flutter_lints" package below contains a set of recommended lints to
