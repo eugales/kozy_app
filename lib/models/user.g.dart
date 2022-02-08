@@ -9,8 +9,8 @@ part of 'user.dart';
 User _$UserFromJson(Map<String, dynamic> json) => User(
       id: json['id'] as int,
       email: json['email'] as String,
-      first_name: json['first_name'] as String,
-      last_name: json['last_name'] as String,
+      first_name: json['first_name'] as String?,
+      last_name: json['last_name'] as String?,
       role: json['role'] as String,
       created_at: DateTime.parse(json['created_at'] as String),
       confirmed: json['confirmed'] as bool,

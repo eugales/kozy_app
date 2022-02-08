@@ -6,8 +6,8 @@ import 'package:http/http.dart' as http;
 
 abstract class AuthenticationService {
   Future<User> getCurrentUser(String accessToken);
-  Future<AuthResponse> signUpWithUsernameAndPassword(String username, String password);
-  Future<AuthResponse> signInWithUsernameAndPassword(String username, String password);
+  Future<AuthResponse> signUpWithEmailAndPassword(String email, String password);
+  Future<AuthResponse> signInWithEmailAndPassword(String email, String password);
   Future<void> signOut(String accessToken);
 }
 
@@ -34,8 +34,8 @@ class MainAuthenticationService extends AuthenticationService {
   }
 
   @override
-  Future<AuthResponse> signInWithUsernameAndPassword(String username, String password) async {
-    final body = jsonEncode({'email': username, 'password': password});
+  Future<AuthResponse> signInWithEmailAndPassword(String email, String password) async {
+    final body = jsonEncode({'email': email, 'password': password});
     final response = await http.post(_getUri('/auth/sign_in'), headers: _headers, body: body);
     if (response.statusCode == 201) {
       final json = jsonDecode(response.body);
@@ -45,8 +45,8 @@ class MainAuthenticationService extends AuthenticationService {
   }
 
   @override
-  Future<AuthResponse> signUpWithUsernameAndPassword(String username, String password) async {
-    final body = jsonEncode({'username': username, 'password': password});
+  Future<AuthResponse> signUpWithEmailAndPassword(String email, String password) async {
+    final body = jsonEncode({'email': email, 'password': password});
     final response = await http.post(_getUri('/auth/sign_up'), headers: _headers, body: body);
     if (response.statusCode == 201) {
       final json = jsonDecode(response.body);

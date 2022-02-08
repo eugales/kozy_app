@@ -4,8 +4,8 @@ import 'package:kozy_app/storage/authentication_storage.dart';
 
 abstract class AuthenticationRepository {
   Future<User> getCurrentUser();
-  Future<User> signUpWithUsernameAndPassword(String username, String password);
-  Future<User> signInWithUsernameAndPassword(String username, String password);
+  Future<User> signUpWithEmailAndPassword(String username, String password);
+  Future<User> signInWithEmailAndPassword(String username, String password);
   Future<bool> signOut(String accessToken);
 }
 
@@ -20,15 +20,15 @@ class MainAuthenticationRepository extends AuthenticationRepository {
   }
 
   @override
-  Future<User> signInWithUsernameAndPassword(String username, String password) async {
-    final authResponse = await _service.signInWithUsernameAndPassword(username, password);
+  Future<User> signInWithEmailAndPassword(String email, String password) async {
+    final authResponse = await _service.signInWithEmailAndPassword(email, password);
     await _storage.setAccessToken(authResponse.access_token);
     return authResponse.user;
   }
 
   @override
-  Future<User> signUpWithUsernameAndPassword(String username, String password) async {
-    final authResponse = await _service.signUpWithUsernameAndPassword(username, password);
+  Future<User> signUpWithEmailAndPassword(String email, String password) async {
+    final authResponse = await _service.signUpWithEmailAndPassword(email, password);
     await _storage.setAccessToken(authResponse.access_token);
     return authResponse.user;
   }

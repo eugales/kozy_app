@@ -6,8 +6,8 @@ part 'user.g.dart';
 class User {
   final int id;
   final String email;
-  final String first_name;
-  final String last_name;
+  final String? first_name;
+  final String? last_name;
   final String role;
   final DateTime created_at;
   final bool confirmed;
