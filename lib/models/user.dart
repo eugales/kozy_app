@@ -6,18 +6,21 @@ part 'user.g.dart';
 class User {
   final int id;
   final String email;
-  final String? first_name;
-  final String? last_name;
+  @JsonKey(name: 'first_name')
+  final String? firstName;
+  @JsonKey(name: 'last_name')
+  final String? lastName;
   final String role;
-  final DateTime created_at;
+  @JsonKey(name: 'created_at')
+  final DateTime createdAt;
   final bool confirmed;
   User({
     required this.id,
     required this.email,
-    required this.first_name,
-    required this.last_name,
+    this.firstName,
+    this.lastName,
     required this.role,
-    required this.created_at,
+    required this.createdAt,
     required this.confirmed,
   });
 

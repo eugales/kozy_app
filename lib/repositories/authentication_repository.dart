@@ -3,10 +3,10 @@ import 'package:kozy_app/services/services.dart';
 import 'package:kozy_app/storage/authentication_storage.dart';
 
 abstract class AuthenticationRepository {
-  Future<User> getCurrentUser();
-  Future<User> signUpWithEmailAndPassword(String username, String password);
-  Future<User> signInWithEmailAndPassword(String username, String password);
-  Future<bool> signOut(String accessToken);
+  Future<User?> getCurrentUser();
+  Future<User?> signUpWithEmailAndPassword(String email, String password);
+  Future<User?> signInWithEmailAndPassword(String email, String password);
+  Future<bool> signOut();
 }
 
 class MainAuthenticationRepository extends AuthenticationRepository {
@@ -14,27 +14,35 @@ class MainAuthenticationRepository extends AuthenticationRepository {
   final AuthenticationStorage _storage = AuthenticationStorage();
 
   @override
-  Future<User> getCurrentUser() async {
-    final accessToken = await _storage.getAccessToken();
-    return _service.getCurrentUser(accessToken);
-  }
-
-  @override
-  Future<User> signInWithEmailAndPassword(String email, String password) async {
-    final authResponse = await _service.signInWithEmailAndPassword(email, password);
-    await _storage.setAccessToken(authResponse.access_token);
+  Future<User?> getCurrentUser() async {
+    String? accessToken = await _storage.getAccessToken();
+    AuthResponse authResponse = await _service.getCurrentUser(accessToken);
     return authResponse.user;
   }
 
   @override
-  Future<User> signUpWithEmailAndPassword(String email, String password) async {
-    final authResponse = await _service.signUpWithEmailAndPassword(email, password);
-    await _storage.setAccessToken(authResponse.access_token);
-    return authResponse.user;
+  Future<User?> signInWithEmailAndPassword(String email, String password) async {
+    AuthResponse authResponse = await _service.signInWithEmailAndPassword(email, password);
+    String? accessToken = authResponse.accessToken;
+    if (accessToken != null) {
+      await _storage.setAccessToken(accessToken);
+      return authResponse.user;
+    }
   }
 
   @override
-  Future<bool> signOut(String accessToken) async {
+  Future<User?> signUpWithEmailAndPassword(String email, String password) async {
+    AuthResponse authResponse = await _service.signUpWithEmailAndPassword(email, password);
+    String? accessToken = authResponse.accessToken;
+    if (accessToken != null) {
+      await _storage.setAccessToken(accessToken);
+      return authResponse.user;
+    }
+  }
+
+  @override
+  Future<bool> signOut() async {
+    String accessToken = await _storage.getAccessToken();
     await _service.signOut(accessToken);
     return _storage.removeAccessToken();
   }

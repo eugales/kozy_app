@@ -5,13 +5,15 @@ part 'order.g.dart';
 @JsonSerializable(fieldRename: FieldRename.snake)
 class Order {
   final int id;
-  final String delivery_address;
-  final int buyer_id;
+  @JsonKey(name: 'delivery_address')
+  final String deliveryAddress;
+  @JsonKey(name: 'buyer_id')
+  final int buyerId;
 
   Order({
     required this.id,
-    required this.delivery_address,
-    required this.buyer_id,
+    required this.deliveryAddress,
+    required this.buyerId,
   });
 
   factory Order.fromJson(Map<String, dynamic> json) => _$OrderFromJson(json);

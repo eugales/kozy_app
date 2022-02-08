@@ -5,10 +5,12 @@ part 'auth_response.g.dart';
 
 @JsonSerializable(fieldRename: FieldRename.snake)
 class AuthResponse {
-  User user;
-  String access_token;
+  User? user;
+  @JsonKey(name: 'access_token')
+  String? accessToken;
+  List<String>? errors;
 
-  AuthResponse({required this.user, required this.access_token});
-  
+  AuthResponse({this.user, this.accessToken, this.errors});
+
   factory AuthResponse.fromJson(Map<String, dynamic> json) => _$AuthResponseFromJson(json);
 }

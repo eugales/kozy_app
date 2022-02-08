@@ -4,12 +4,14 @@ part 'line_item.g.dart';
 
 @JsonSerializable(fieldRename: FieldRename.snake)
 class LineItem {
-  final int order_id;
-  final int product_id;
+  @JsonKey(name: 'order_id')
+  final int orderId;
+  @JsonKey(name: 'product_id')
+  final int productId;
 
   LineItem({
-    required this.order_id,
-    required this.product_id,
+    required this.orderId,
+    required this.productId,
   });
 
   factory LineItem.fromJson(Map<String, dynamic> json) => _$LineItemFromJson(json);
