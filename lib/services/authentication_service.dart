@@ -25,7 +25,7 @@ class MainAuthenticationService extends AuthenticationService {
   @override
   Future<AuthResponse> getCurrentUser(String accessToken) async {
     _headers['authorization'] = accessToken;
-    final response = await http.get(_getUri('/auth/current_user'), headers: _headers);
+    final response = await http.get(_getUri('/auth/validate_token'), headers: _headers);
     switch (response.statusCode) {
       case 200:
       case 401:
@@ -70,8 +70,8 @@ class MainAuthenticationService extends AuthenticationService {
   @override
   Future<void> signOut(String accessToken) async {
     _headers['authorization'] = accessToken;
-    final response = await http.delete(_getUri('/auth/sign_in'), headers: _headers);
-    if (response.statusCode == 205) return;
+    final response = await http.delete(_getUri('/auth/sign_out'), headers: _headers);
+    if (response.statusCode == 204) return;
     throw AuthenticationException(message: response.reasonPhrase ?? 'sign out exception');
   }
 }

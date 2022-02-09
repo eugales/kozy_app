@@ -22,4 +22,9 @@ class AuthenticationStorage {
     final instance = await SharedPreferences.getInstance();
     return instance.remove(_accessToken);
   }
+
+  Future<bool> containsAccessToken() async {
+    final instance = await SharedPreferences.getInstance();
+    return instance.containsKey(_accessToken);
+  }
 }

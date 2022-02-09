@@ -17,6 +17,7 @@ class MainAuthenticationRepository extends AuthenticationRepository {
   Future<User?> getCurrentUser() async {
     String? accessToken = await _storage.getAccessToken();
     AuthResponse authResponse = await _service.getCurrentUser(accessToken);
+    if(authResponse.user == null) await _storage.removeAccessToken();
     return authResponse.user;
   }
 

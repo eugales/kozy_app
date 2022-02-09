@@ -35,6 +35,7 @@ dependencies:
   json_annotation:
   http:
   shared_preferences:
+  email_validator:
 
 
   # The following adds the Cupertino Icons font to your application.
