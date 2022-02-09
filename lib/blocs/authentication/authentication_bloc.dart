@@ -31,6 +31,10 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
       emit.call(AuthenticationAuthenticated(user: event.user));
     });
 
+    on<UserSignedUp>((event, emit) {
+      emit.call(AuthenticationAuthenticated(user: event.user));
+    });
+
     on<UserSignedOut>((event, emit) async {
       if(await _repository.signOut()) emit.call(AuthenticationNotAuthenticatied());
     });

@@ -71,7 +71,12 @@ class MainAuthenticationService extends AuthenticationService {
   Future<void> signOut(String accessToken) async {
     _headers['authorization'] = accessToken;
     final response = await http.delete(_getUri('/auth/sign_out'), headers: _headers);
-    if (response.statusCode == 204) return;
-    throw AuthenticationException(message: response.reasonPhrase ?? 'sign out exception');
+    switch (response.statusCode) {
+      case 204:
+      case 401:
+        return;
+      default:
+        throw AuthenticationException(message: response.reasonPhrase ?? 'sign out exception');
+    }
   }
 }
