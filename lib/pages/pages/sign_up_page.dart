@@ -2,12 +2,11 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kozy_app/blocs/blocs.dart';
-import 'package:kozy_app/pages/pages/sign_up_page.dart';
 import 'package:kozy_app/pages/widgets/custom_text_field.dart';
 import 'package:kozy_app/repositories/authentication_repository.dart';
 
-class SignInPage extends StatelessWidget {
-  const SignInPage({Key? key}) : super(key: key);
+class SignUpPage extends StatelessWidget {
+  const SignUpPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +16,7 @@ class SignInPage extends StatelessWidget {
           builder: (context, state) {
             final authBloc = BlocProvider.of<AuthenticationBloc>(context);
             if (state is AuthenticationNotAuthenticatied) {
-              return _AuthForm();
+              return _RegForm();
             }
 
             if (state is AuthenticationFailure) {
@@ -50,7 +49,7 @@ class SignInPage extends StatelessWidget {
   }
 }
 
-class _AuthForm extends StatelessWidget {
+class _RegForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final repository = RepositoryProvider.of<AuthenticationRepository>(context);
@@ -58,22 +57,22 @@ class _AuthForm extends StatelessWidget {
 
     return Container(
       alignment: Alignment.center,
-      child: BlocProvider<SignInBloc>(
-        create: (context) => SignInBloc(authBloc, repository),
-        child: const _SignInForm(),
+      child: BlocProvider<SignUpBloc>(
+        create: (context) => SignUpBloc(authBloc, repository),
+        child: const _SignUpForm(),
       ),
     );
   }
 }
 
-class _SignInForm extends StatefulWidget {
-  const _SignInForm({Key? key}) : super(key: key);
+class _SignUpForm extends StatefulWidget {
+  const _SignUpForm({Key? key}) : super(key: key);
 
   @override
-  _SignInFormState createState() => _SignInFormState();
+  _SignUpFormState createState() => _SignUpFormState();
 }
 
-class _SignInFormState extends State<_SignInForm> {
+class _SignUpFormState extends State<_SignUpForm> {
   final _formKey = GlobalKey<FormState>();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
@@ -87,19 +86,16 @@ class _SignInFormState extends State<_SignInForm> {
 
   @override
   Widget build(BuildContext context) {
-    final _signInBloc = BlocProvider.of<SignInBloc>(context);
+    final _signUpBloc = BlocProvider.of<SignUpBloc>(context);
 
-    void onSignInPressed() {
+    void onSignUpPressed() {
       if (_formKey.currentState!.validate()) {
         String email = emailController.value.text;
         String password = passwordController.value.text;
-        final event = SignInWithEmailButtonPressed(email: email, password: password);
-        _signInBloc.add(event);
-      }
-    }
+        final event = SignUpWithEmailButtonPressed(email: email, password: password);
 
-    void toSignUpPagePressed() {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => const SignUpPage()));
+        _signUpBloc.add(event);
+      }
     }
 
     void _showError(String error) {
@@ -111,41 +107,34 @@ class _SignInFormState extends State<_SignInForm> {
       );
     }
 
-    return BlocListener<SignInBloc, SignInState>(
+    return BlocListener<SignUpBloc, SignUpState>(
       listener: (context, state) {
-        if (state is SignInFailure) {
+        if (state is SignUpSuccess) {
+          Navigator.pop(context);
+        }
+        if (state is SignUpFailure) {
           _showError(state.message);
         }
       },
-      child: BlocBuilder<SignInBloc, SignInState>(builder: (context, state) {
-        return GestureDetector(
-          onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-          child: Container(
-            alignment: Alignment.center,
-            padding: const EdgeInsets.symmetric(horizontal: 12.0),
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Form(
-                  key: _formKey,
+      child: BlocBuilder<SignUpBloc, SignUpState>(
+        builder: (context, state) {
+          return GestureDetector(
+            onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+            child: Container(
+              alignment: Alignment.center,
+              padding: const EdgeInsets.symmetric(horizontal: 12.0),
+              child: Form(
+                key: _formKey,
+                child: SingleChildScrollView(
                   child: Column(
                     children: [
                       const SizedBox(
                         height: 50,
                       ),
                       Container(
-                        height: 280,
-                        width: double.infinity,
-                        child: const Text(
-                          'Kozy',
-                          style: TextStyle(fontSize: 50),
-                        ),
-                        alignment: Alignment.center,
-                      ),
-                      Container(
                         alignment: Alignment.centerLeft,
                         child: const Text(
-                          'Log in to your account',
+                          'Register new account',
                           style: TextStyle(fontSize: 25),
                         ),
                       ),
@@ -153,19 +142,18 @@ class _SignInFormState extends State<_SignInForm> {
                         height: 30,
                       ),
                       CustomTextField(
-                          labelText: 'Email',
-                          hintText: 'Username or e-mail',
-                          iconData: Icons.person,
-                          controller: emailController,
-                          validator: (v) {
-                            if (v == null || v.isEmpty) {
-                              return 'Please enter email';
-                            }
-                            if (!EmailValidator.validate(v)) {
-                              return 'Please enter valid email';
-                            }
-                            return null;
-                          }),
+                        labelText: 'Email',
+                        hintText: 'Username or e-mail',
+                        iconData: Icons.person,
+                        controller: emailController,
+                        validator: (v) {
+                          if (v == null || v.isEmpty) return 'Please enter email';
+                          if (!EmailValidator.validate(v)) {
+                            return 'Please enter valid email';
+                          }
+                          return null;
+                        },
+                      ),
                       CustomTextField(
                           labelText: 'Password',
                           hintText: 'Password',
@@ -173,59 +161,31 @@ class _SignInFormState extends State<_SignInForm> {
                           controller: passwordController,
                           validator: (v) => (v == null || v.isEmpty) ? 'Please enter password' : null,
                           obscureText: true),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          TextButton(
-                            onPressed: () {},
-                            child: const Text(
-                              'Forgot Password?',
-                              style: TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400),
-                            ),
-                          ),
-                        ],
-                      ),
                       const SizedBox(
-                        height: 20,
+                        height: 45,
                       ),
                       MaterialButton(
-                        onPressed: onSignInPressed,
+                        onPressed: onSignUpPressed,
                         height: 45,
                         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 50),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                         color: Colors.black,
                         child: const Text(
-                          'Login',
+                          'Register',
                           style: TextStyle(color: Colors.white),
                         ),
                       ),
                       const SizedBox(
-                        height: 20,
+                        height: 30,
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Don\'t have an account?',
-                            style: TextStyle(color: Colors.grey.shade600),
-                          ),
-                          TextButton(
-                            onPressed: toSignUpPagePressed,
-                            child: const Text(
-                              'Register',
-                              style: TextStyle(color: Colors.blue, fontSize: 14, fontWeight: FontWeight.w600),
-                            ),
-                          )
-                        ],
-                      )
                     ],
                   ),
                 ),
               ),
             ),
-          ),
-        );
-      }),
+          );
+        },
+      ),
     );
   }
 }

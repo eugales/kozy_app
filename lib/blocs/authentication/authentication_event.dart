@@ -18,4 +18,13 @@ class UserSignedIn extends AuthenticationEvent {
   List<Object> get props => [user];
 }
 
+class UserSignedUp extends AuthenticationEvent {
+  final User user;
+
+  const UserSignedUp({required this.user});
+
+  @override
+  List<Object> get props => [user];
+}
+
 class UserSignedOut extends AuthenticationEvent {}

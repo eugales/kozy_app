@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:kozy_app/exceptions/authentication_exception.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthenticationStorage {
@@ -11,10 +10,9 @@ class AuthenticationStorage {
     return instance.setString(_accessToken, token);
   }
 
-  Future<String> getAccessToken() async {
+  Future<String?> getAccessToken() async {
     final instance = await SharedPreferences.getInstance();
     final token = instance.getString(_accessToken);
-    if (token == null) throw AuthenticationException(message: 'no token found in storage');
     return token;
   }
 
