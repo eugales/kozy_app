@@ -7,6 +7,7 @@ class CustomTextField extends StatelessWidget {
   final TextEditingController _controller;
   final String? Function(String?)? _validator;
   final bool _obscureText;
+  final TextInputType? _keyboardType;
 
   const CustomTextField(
       {Key? key,
@@ -14,14 +15,17 @@ class CustomTextField extends StatelessWidget {
       required String hintText,
       IconData? iconData,
       required TextEditingController controller,
-      required String? Function(String?)? validator,
-      bool obscureText = false})
+      String? Function(String?)? validator,
+      bool obscureText = false,
+      TextInputType? keyboardType,
+      })
       : _labelText = labelText,
         _hintText = hintText,
         _iconData = iconData,
         _controller = controller,
         _validator = validator,
         _obscureText = obscureText,
+        _keyboardType = keyboardType,
         super(key: key);
 
   @override
@@ -33,6 +37,7 @@ class CustomTextField extends StatelessWidget {
         validator: _validator,
         obscureText: _obscureText,
         cursorColor: Colors.black,
+        keyboardType: _keyboardType,
         decoration: InputDecoration(
           labelText: _labelText,
           hintText: _hintText,
@@ -40,8 +45,7 @@ class CustomTextField extends StatelessWidget {
             color: Colors.grey,
             fontSize: 14,
           ),
-          labelStyle: const TextStyle(
-              color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400),
+          labelStyle: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400),
           errorStyle: const TextStyle(height: 0.5),
           prefixIcon: _iconData != null
               ? Icon(
@@ -54,11 +58,9 @@ class CustomTextField extends StatelessWidget {
             borderSide: BorderSide(color: Colors.grey.shade200, width: 2),
             borderRadius: BorderRadius.circular(10),
           ),
-          floatingLabelStyle:
-              const TextStyle(color: Colors.black, fontSize: 18),
+          floatingLabelStyle: const TextStyle(color: Colors.black, fontSize: 18),
           focusedBorder: OutlineInputBorder(
-              borderSide: const BorderSide(color: Colors.black, width: 1.5),
-              borderRadius: BorderRadius.circular(10)),
+              borderSide: const BorderSide(color: Colors.black, width: 1.5), borderRadius: BorderRadius.circular(10)),
           errorBorder: OutlineInputBorder(
             borderSide: BorderSide(color: Colors.red.shade200, width: 2),
             borderRadius: BorderRadius.circular(10),
