@@ -15,12 +15,13 @@ class MainAuthenticationRepository extends AuthenticationRepository {
 
   @override
   Future<User?> getCurrentUser() async {
-    String? accessToken = await _storage.getAccessToken();
-    if (accessToken == null) return null;
-
-    AuthResponse authResponse = await _service.getCurrentUser(accessToken);
-    if (authResponse.user == null) await _storage.removeAccessToken();
-    return authResponse.user;
+    final isAccessToken = await _storage.containsAccessToken();
+    if(isAccessToken){
+      String accessToken = await _storage.getAccessToken();
+      AuthResponse authResponse = await _service.getCurrentUser(accessToken);
+      if (authResponse.user == null) await _storage.removeAccessToken();
+      return authResponse.user;
+    }
   }
 
   @override
@@ -45,9 +46,7 @@ class MainAuthenticationRepository extends AuthenticationRepository {
 
   @override
   Future<bool> signOut() async {
-    String? accessToken = await _storage.getAccessToken();
-    if (accessToken == null) return false;
-
+    String accessToken = await _storage.getAccessToken();
     await _service.signOut(accessToken);
     return _storage.removeAccessToken();
   }
